@@ -33,3 +33,4 @@ python main.py
 # Upcoming features (who am I kidding)
 - Quality of life improvements (window title, scrollable sound thumbnails)
 - Volume adjustment
+- Executable using PyInstaller
