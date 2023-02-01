@@ -31,5 +31,8 @@ class Event(Generic[T]):
     def bind_invoke(self, sender: object, event_args: T) -> Callable[[object, T], None]:
         return lambda: self.invoke(sender, event_args)
 
+    def bind_invoke_sender(self, sender: object) -> Callable[[object, T], None]:
+        return lambda event_args: self.invoke(sender, event_args)
+
     def bind_invoke_empty(self, sender: object, event_args: T) -> Callable[[object, T], None]:
         return lambda *_: self.invoke(sender, event_args)

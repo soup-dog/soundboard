@@ -12,6 +12,7 @@ import pickle
 from event import Event
 
 import numpy as np
+from pynput import keyboard
 
 
 DeviceParameters = Mapping[str, str | int | float]
@@ -37,14 +38,15 @@ class SoundSpec:
         self.name: str = "Sound"
         self.path: str = ""
         self.volume: float = 1
+        self.keys: set[keyboard.Key] = set()
 
 
 class AppInfo:
-    VERSION = 0.1
+    VERSION: float = 0.2
 
     def __init__(self):
-        self.version = self.VERSION
-        self.sounds = []
+        self.version: float = self.VERSION
+        self.sounds: List[SoundSpec]  = []
         self.echo: bool = True
         self.input_device_name = ""
         self.output_device_name = ""
@@ -92,6 +94,15 @@ class SoundEditor(tk.Toplevel):
         self.volume_slider = ttk.Scale(self.frame, variable=self.volume_var)
         self.volume_slider.grid()
 
+        self.key_frame = ttk.Frame(self.frame)
+        self.key_frame.grid()
+
+        self.key_button = ttk.Button(self.key_frame, text="Set Binding", command=lambda *_: self.set_binding())
+        self.key_button.grid(row=0, column=0)
+
+        self.key_label = ttk.Label(self.key_frame, text=self.stringify_keys())
+        self.key_label.grid(row=0, column=1)
+
         self.buttons_frame = ttk.Frame(self.frame, padding=5)
         self.buttons_frame.grid()
 
@@ -112,6 +123,9 @@ class SoundEditor(tk.Toplevel):
     def init_styles(self):
         s = ttk.Style()
         s.configure(self.ErrorStyleName, foreground="red")
+
+    def stringify_keys(self):
+        return " ".join(map(str, self.spec.keys))
 
     def on_close(self) -> None:
         self.app.editors.remove(self)
@@ -138,6 +152,24 @@ class SoundEditor(tk.Toplevel):
 
         self.app.thumbnails.get_thumbnail_by_spec(self.spec).spec_updated()
         self.app.save_appinfo()
+
+    def set_binding(self):
+        keys = set()
+
+        def on_pressed(sender, key):
+            if key not in keys:
+                keys.add(key)
+
+        def on_released(sender, key):
+            self.app.pressed.remove(on_pressed)
+            self.app.released.remove(on_released)
+
+            self.spec.keys = keys
+
+            self.key_label.configure(text=self.stringify_keys())
+
+        self.app.pressed.add(on_pressed)
+        self.app.released.add(on_released)
 
 
 class SoundThumbnail(ttk.Frame):
@@ -337,6 +369,17 @@ class SoundboardApp(tk.Tk):
 
         self.audio: pyaudio.PyAudio = pyaudio.PyAudio()
 
+        self.pressed: Event[keyboard.Key] = Event()
+        self.released: Event[keyboard.Key] = Event()
+
+        self.pressed.add(self.on_pressed)
+        self.released.add(self.on_released)
+
+        self.listener = keyboard.Listener(on_press=self.pressed.bind_invoke_sender(self), on_release=self.released.bind_invoke_sender(self))
+        self.listener.start()
+
+        self.global_keys: set[keyboard.Key] = set()
+
         self.appinfo = self.load_appinfo()
 
         self.devices: List[DeviceParameters] = []
@@ -401,6 +444,23 @@ class SoundboardApp(tk.Tk):
     #
     # def get_output_device_by_name(self, name: str) -> DeviceParameters:
     #     return get_device_by_name(name, self.output_devices)
+
+    def keybind_met(self, keybind: set[keyboard.Key]):
+        if len(keybind) == 0:
+            return False
+        return all((key in self.global_keys) for key in keybind)
+
+    def on_pressed(self, sender, key):
+        if key not in self.global_keys:
+            self.global_keys.add(key)
+
+        for sound in self.appinfo.sounds:
+            if self.keybind_met(sound.keys):
+                self.play_sound(sound)
+
+    def on_released(self, sender, key):
+        if key in self.global_keys:
+            self.global_keys.remove(key)
 
     def set_input_device(self, device: DeviceParameters) -> None:
         self.input_device = device
