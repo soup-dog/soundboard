@@ -46,7 +46,7 @@ class AppInfo:
 
     def __init__(self):
         self.version: float = self.VERSION
-        self.sounds: List[SoundSpec]  = []
+        self.sounds: List[SoundSpec] = []
         self.echo: bool = True
         self.input_device_name = ""
         self.output_device_name = ""
