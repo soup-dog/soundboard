@@ -73,6 +73,8 @@ class SoundEditor(tk.Toplevel):
         if not self._styles_initialised:
             self.init_styles()
 
+        self.title("Shiteboard - " + spec.name)
+
         self.frame = ttk.Frame(self, padding=5)
         self.frame.grid()
 
@@ -152,6 +154,8 @@ class SoundEditor(tk.Toplevel):
 
         self.app.thumbnails.get_thumbnail_by_spec(self.spec).spec_updated()
         self.app.save_appinfo()
+
+        self.title("Shiteboard - " + self.spec.name)
 
     def set_binding(self):
         keys = set()
@@ -363,6 +367,8 @@ class SoundboardApp(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        self.title("Shiteboard")
+
         # default_font = font.nametofont("TkDefaultFont")
         # default_font.config(family="Terminal")
         # print(font.families())
@@ -549,12 +555,13 @@ class SoundboardApp(tk.Tk):
         super().mainloop(n)
 
 
-app = SoundboardApp()
+if __name__ == '__main__':
+    app = SoundboardApp()
 
-# s = ttk.Style()
-# s.theme_use("alt")
+    # s = ttk.Style()
+    # s.theme_use("alt")
 
-try:
-    app.mainloop()
-finally:
-    app.terminate()
+    try:
+        app.mainloop()
+    finally:
+        app.terminate()
