@@ -24,7 +24,7 @@ python3 -m venv /venv
 ```
 - Install requirements
 ```commandline
-pip install -r requirements
+pip install -r requirements.txt
 ```
 - Run [main](main.py)
 ```commandline
