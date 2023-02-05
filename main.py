@@ -25,8 +25,12 @@ def bind(f, *args, **kwargs):
     return bound
 
 
-def mix(a: bytes, b: bytes) -> bytes:
-    return ((np.frombuffer(a, dtype=np.int16) + np.frombuffer(b, dtype=np.int16)) // 2).tobytes()
+# def mix(a: bytes, b: bytes) -> bytes:
+#     return ((np.frombuffer(a, dtype=np.int16) + np.frombuffer(b, dtype=np.int16)) // 2).tobytes()
+
+
+def mix(a: bytes, b: bytes, volume_a: float = 1, volume_b: float = 1) -> bytes:
+    return ((np.frombuffer(a, dtype=np.int16) * volume_a + np.frombuffer(b, dtype=np.int16) * volume_b) // 2).astype(np.int16).tobytes()
 
 
 def get_device_by_name(name: str, devices: List[DeviceParameters]) -> DeviceParameters:
@@ -395,6 +399,7 @@ class SoundboardApp(tk.Tk):
 
         self._terminated: bool = False
 
+        self.spec: SoundSpec = None
         self.playback: Any = None
 
         self.input_device: DeviceParameters = get_device_by_name(self.appinfo.input_device_name, self.input_devices)
@@ -499,6 +504,7 @@ class SoundboardApp(tk.Tk):
         self.output_devices = [device for device in self.devices if device["maxOutputChannels"] > 0]
 
     def play_sound(self, spec: SoundSpec):
+        self.spec = spec
         wf = wave.open(spec.path, "rb")
         self.set_playback(wf)
 
@@ -523,9 +529,9 @@ class SoundboardApp(tk.Tk):
             delta = len(input_bytes) - pb_frame_count
 
             if delta == 0:
-                self.write_output(mix(input_bytes, playback_bytes))
+                self.write_output(mix(input_bytes, playback_bytes, volume_b=self.spec.volume))
             else:  # there are fewer playback frames than mic frames
-                self.write_output(mix(input_bytes[:pb_frame_count], playback_bytes))  # mix as many frames as we can
+                self.write_output(mix(input_bytes[:pb_frame_count], playback_bytes, volume_b=self.spec.volume))  # mix as many frames as we can
                 self.write_output(input_bytes[pb_frame_count:])  # play mic without mixing
         else:
             self.write_output(input_bytes)
