@@ -37,3 +37,4 @@ python main.py
 - ~~Volume adjustment~~
 - ~~Executable using PyInstaller~~
 - Youtube-dl integration
+- ffmpeg integration to support different file formats
