@@ -11,6 +11,12 @@ Python 3 soundboard. It's a bit shite. Definitely works though and it's free, so
 - Should work in theory on other platforms (untested)
 
 # Installation
+- Download the [latest release](https://github.com/soup-dog/soundboard/releases)
+- Download and install a virtual audio cable (recommended: [VB-CABLE](https://vb-audio.com/Cable/))
+- Unzip and run `main.exe`.
+- Enjoy shiteboard :)
+
+# Manual Installation
 - Download and install [Python 3.11](https://www.python.org/downloads/)
 - Download and install a virtual audio cable (recommended: [VB-CABLE](https://vb-audio.com/Cable/))
 - Clone the repo
