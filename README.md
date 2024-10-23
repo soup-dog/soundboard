@@ -1,5 +1,5 @@
-# shiteboard
-Python 3 soundboard. It's a bit shite. Definitely works though and it's free, so what have you got to lose.
+# soundboard
+Python 3 soundboard. Not great. Definitely works though and it's free, so what have you got to lose.
 
 # Requirements
 - [Python 3.11](https://www.python.org/downloads/)
@@ -14,7 +14,7 @@ Python 3 soundboard. It's a bit shite. Definitely works though and it's free, so
 - Download the [latest release](https://github.com/soup-dog/soundboard/releases)
 - Download and install a virtual audio cable (recommended: [VB-CABLE](https://vb-audio.com/Cable/))
 - Unzip and run `main.exe`.
-- Enjoy shiteboard :)
+- Enjoy :)
 
 # Manual Installation
 - Download and install [Python 3.11](https://www.python.org/downloads/)
@@ -36,7 +36,7 @@ pip install -r requirements.txt
 ```commandline
 python main.py
 ```
-- Enjoy shiteboard :)
+- Enjoy :)
 
 # Upcoming features (who am I kidding)
 - Quality of life improvements (~~window title~~, scrollable sound thumbnails)
